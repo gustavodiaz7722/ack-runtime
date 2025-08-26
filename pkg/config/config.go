@@ -43,6 +43,7 @@ import (
 
 const (
 	flagEnableAdoptedResourceReconciler = "enable-adopted-resource-reconciler"
+	flagEnableStatusReconciler          = "enable-status-reconciler"
 	flagEnableFieldExportReconciler     = "enable-field-export-reconciler"
 	flagEnableLeaderElection            = "enable-leader-election"
 	flagLeaderElectionNamespace         = "leader-election-namespace"
@@ -88,6 +89,7 @@ type Config struct {
 	HealthzAddr                     string
 	EnableLeaderElection            bool
 	EnableAdoptedResourceReconciler bool
+	EnableStatusReconciler          bool
 	EnableFieldExportReconciler     bool
 	LeaderElectionNamespace         string
 	EnableDevelopmentLogging        bool
@@ -145,6 +147,11 @@ func (cfg *Config) BindFlags() {
 		&cfg.EnableAdoptedResourceReconciler, flagEnableAdoptedResourceReconciler,
 		true,
 		"Enable the AdoptedResource reconciler.",
+	)
+	flag.BoolVar(
+		&cfg.EnableStatusReconciler, flagEnableStatusReconciler,
+		false,
+		"Enable the Status reconciler.",
 	)
 	flag.BoolVar(
 		&cfg.EnableFieldExportReconciler, flagEnableFieldExportReconciler,

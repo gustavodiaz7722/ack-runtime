@@ -61,6 +61,9 @@ type serviceController struct {
 	// reconcilers is a map containing AWSResourceReconciler objects that are
 	// bound to the `controller-runtime.Manager` in `BindControllerManager`
 	reconcilers []acktypes.AWSResourceReconciler
+	// statusReconcilers is a map containing StatusReconciler objects that are
+	// bound to the `controller-runtime.Manager` in `BindControllerManager`
+	statusReconcilers []acktypes.StatusReconciler
 	// adoptionReconciler contains a reconciler that for the adoption process
 	// and is bound to the `controller-runtime.Manager` in
 	// `BindControllerManager`
@@ -260,7 +263,7 @@ func (c *serviceController) BindControllerManager(mgr ctrlrt.Manager, cfg ackcfg
 
 	exporterInstalled := false
 	exporterLogger := c.log.WithName("exporter")
-	
+
 	if cfg.EnableFieldExportReconciler {
 		exporterInstalled, err := c.GetFieldExportInstalled(mgr)
 		if err != nil {
@@ -309,6 +312,14 @@ func (c *serviceController) BindControllerManager(mgr ctrlrt.Manager, cfg ackcfg
 		}
 		c.reconcilers = append(c.reconcilers, rec)
 
+		if cfg.EnableStatusReconciler {
+			statusRec := NewStatusReconciler(cfg, rmf, rmf.ResourceDescriptor())
+			if err := statusRec.BindControllerManager(mgr); err != nil {
+				return err
+			}
+			c.statusReconcilers = append(c.statusReconcilers, statusRec)
+		}
+
 		if cfg.EnableFieldExportReconciler && exporterInstalled {
 			rd := rmf.ResourceDescriptor()
 			feRec := NewFieldExportReconcilerForAWSResource(c, exporterLogger, cfg, c.metrics, cache, rd)
@@ -335,9 +346,9 @@ func NewServiceController(
 ) acktypes.ServiceController {
 	return &serviceController{
 		ServiceControllerMetadata: acktypes.ServiceControllerMetadata{
-			VersionInfo:        versionInfo,
-			ServiceAlias:       svcAlias,
-			ServiceAPIGroup:    svcAPIGroup,
+			VersionInfo:     versionInfo,
+			ServiceAlias:    svcAlias,
+			ServiceAPIGroup: svcAPIGroup,
 		},
 		metrics: ackmetrics.NewMetrics(svcAlias),
 	}
