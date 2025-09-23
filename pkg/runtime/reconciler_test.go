@@ -1925,7 +1925,8 @@ func TestEnsureReadyCondition_TerminalReason(t *testing.T) {
 	desired, _, _ := resourceMocks()
 
 	latest, _, _ := resourceMocks()
-	latest.On("Conditions").Return([]*ackv1alpha1.Condition{{Type: ackv1alpha1.ConditionTypeResourceSynced, Status: corev1.ConditionFalse}, {Type: ackv1alpha1.ConditionTypeTerminal, Status: corev1.ConditionTrue}}).Times(3)
+	terminal_error_message := "terminal error message"
+	latest.On("Conditions").Return([]*ackv1alpha1.Condition{{Type: ackv1alpha1.ConditionTypeResourceSynced, Status: corev1.ConditionFalse}, {Type: ackv1alpha1.ConditionTypeTerminal, Status: corev1.ConditionTrue, Message: &terminal_error_message}}).Times(3)
 	latest.On("ReplaceConditions", []*ackv1alpha1.Condition{}).Return().Once()
 	latest.On("Conditions").Return([]*ackv1alpha1.Condition{})
 	latest.On(
@@ -1938,6 +1939,7 @@ func TestEnsureReadyCondition_TerminalReason(t *testing.T) {
 		assert.Equal(t, ackv1alpha1.ConditionTypeReady, cond.Type)
 		assert.Equal(t, corev1.ConditionFalse, cond.Status)
 		assert.Contains(t, *cond.Reason, ackcondition.TerminalReason)
+		assert.Contains(t, *cond.Message, terminal_error_message)
 	})
 
 	rmf, _ := managedResourceManagerFactoryMocks(desired, latest)
@@ -1952,7 +1954,8 @@ func TestEnsureReadyCondition_RecoverableReason(t *testing.T) {
 	desired, _, _ := resourceMocks()
 
 	latest, _, _ := resourceMocks()
-	latest.On("Conditions").Return([]*ackv1alpha1.Condition{{Type: ackv1alpha1.ConditionTypeResourceSynced, Status: corev1.ConditionUnknown}, {Type: ackv1alpha1.ConditionTypeRecoverable, Status: corev1.ConditionTrue}}).Times(3)
+	recoverable_terminal_error_message := "recoverable error message"
+	latest.On("Conditions").Return([]*ackv1alpha1.Condition{{Type: ackv1alpha1.ConditionTypeResourceSynced, Status: corev1.ConditionUnknown}, {Type: ackv1alpha1.ConditionTypeRecoverable, Status: corev1.ConditionTrue, Message: &recoverable_terminal_error_message}}).Times(3)
 	latest.On("ReplaceConditions", []*ackv1alpha1.Condition{}).Return().Once()
 	latest.On("Conditions").Return([]*ackv1alpha1.Condition{})
 	latest.On(
@@ -1965,6 +1968,7 @@ func TestEnsureReadyCondition_RecoverableReason(t *testing.T) {
 		assert.Equal(t, ackv1alpha1.ConditionTypeReady, cond.Type)
 		assert.Equal(t, corev1.ConditionUnknown, cond.Status)
 		assert.Contains(t, *cond.Reason, ackcondition.RecoverableReason)
+		assert.Contains(t, *cond.Message, recoverable_terminal_error_message)
 	})
 
 	rmf, _ := managedResourceManagerFactoryMocks(desired, latest)
