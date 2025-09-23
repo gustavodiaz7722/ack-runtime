@@ -1168,16 +1168,16 @@ func (r *resourceReconciler) handleRequeues(
 	if ackcompare.IsNotNil(latest) {
 		rlog := ackrtlog.FromContext(ctx)
 		for _, condition := range latest.Conditions() {
-			if condition.Type != ackv1alpha1.ConditionTypeResourceSynced {
+			if condition.Type != ackv1alpha1.ConditionTypeReady {
 				continue
 			}
-			// The code below only executes for "ConditionTypeResourceSynced"
+			// The code below only executes for "ConditionTypeReady"
 			if condition.Status == corev1.ConditionTrue {
 				rlog.Debug("requeuing", "after", r.resyncPeriod)
 				return latest, requeue.NeededAfter(nil, r.resyncPeriod)
 			} else {
 				rlog.Debug(
-					"requeueing resource after finding resource synced condition false",
+					"requeueing resource after finding ready condition false",
 				)
 				return latest, requeue.NeededAfter(
 					ackerr.TemporaryOutOfSync, requeue.DefaultRequeueAfterDuration)
