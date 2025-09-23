@@ -621,9 +621,11 @@ func (r *resourceReconciler) EnsureReadyCondition(ctx context.Context,
 	if terminal != nil && terminal.Status == corev1.ConditionTrue {
 		reason = &ackcondition.TerminalReason
 		message = terminal.Message
+		status = corev1.ConditionFalse
 	} else if recoverable != nil && recoverable.Status == corev1.ConditionTrue {
 		reason = &ackcondition.RecoverableReason
 		message = recoverable.Message
+		status = corev1.ConditionFalse
 	}
 
 	ackcondition.Clear(res)

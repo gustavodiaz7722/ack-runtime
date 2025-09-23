@@ -1966,7 +1966,7 @@ func TestEnsureReadyCondition_RecoverableReason(t *testing.T) {
 		assert.Equal(t, 1, len(conditions))
 		cond := conditions[0]
 		assert.Equal(t, ackv1alpha1.ConditionTypeReady, cond.Type)
-		assert.Equal(t, corev1.ConditionUnknown, cond.Status)
+		assert.Equal(t, corev1.ConditionFalse, cond.Status)
 		assert.Contains(t, *cond.Reason, ackcondition.RecoverableReason)
 		assert.Contains(t, *cond.Message, recoverable_terminal_error_message)
 	})
