@@ -402,7 +402,6 @@ func (r *resourceReconciler) Sync(
 	r.resetConditions(ctx, desired)
 	defer func() {
 		r.ensureConditions(ctx, rm, latest, err)
-		r.EnsureReadyCondition(ctx, latest)
 	}()
 
 	isAdopted := IsAdopted(desired)
@@ -973,7 +972,7 @@ func (r *resourceReconciler) patchResourceStatus(
 	defer func() {
 		exit(err)
 	}()
-
+	r.EnsureReadyCondition(ctx, latest)
 	rlog.Enter("kc.Patch (status)")
 	dobj := desired.DeepCopy().RuntimeObject()
 	lobj := latest.DeepCopy().RuntimeObject()
@@ -1168,7 +1167,7 @@ func (r *resourceReconciler) handleRequeues(
 	if ackcompare.IsNotNil(latest) {
 		rlog := ackrtlog.FromContext(ctx)
 		for _, condition := range latest.Conditions() {
-			if condition.Type != ackv1alpha1.ConditionTypeReady {
+			if condition.Type != ackv1alpha1.ConditionTypeResourceSynced {
 				continue
 			}
 			// The code below only executes for "ConditionTypeReady"
