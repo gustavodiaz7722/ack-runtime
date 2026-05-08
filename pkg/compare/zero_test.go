@@ -103,15 +103,16 @@ func TestIsZeroEqualsNil(t *testing.T) {
 		b        interface{}
 		expected bool
 	}{
+		{"empty string and nil", "", nil, true},
+		{"zero int and nil", 0, nil, true},
+		{"false and nil", false, nil, true},
+		{"pointer to empty string and nil", &emptyString, nil, true},
+		{"pointer to empty string and nil pointer", &emptyString, nullPtr, true},
 		{"nil and nil", nil, nil, false},
-		{"nil and empty string", nil, "", true},
-		{"nil and zero int", nil, 0, true},
-		{"nil and pointer to empty string", nil, &emptyString, true},
-		{"nil pointer and pointer to empty string", nullPtr, &emptyString, true},
-		{"nil and non-empty string", nil, "hello", false},
-		{"nil and pointer to non-empty string", nil, &nonEmptyString, false},
-		{"non-nil and empty string", &emptyString, "", false},
-		{"non-nil and pointer to empty string", &nonEmptyString, &emptyString, false},
+		{"non-empty string and nil", "hello", nil, false},
+		{"pointer to non-empty string and nil", &nonEmptyString, nil, false},
+		{"empty string and non-nil", "", &emptyString, false},
+		{"nil pointer and nil", nullPtr, nil, false},
 	}
 
 	for _, tc := range tests {

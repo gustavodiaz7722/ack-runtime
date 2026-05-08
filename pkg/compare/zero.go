@@ -25,5 +25,5 @@ func IsNilEqualsZero(a interface{}, b interface{}) bool {
 }
 
 func IsZeroEqualsNil(a interface{}, b interface{}) bool {
-	return IsNil(a) && IsZeroValue(b)
+	return IsZeroValue(a) && IsNil(b)
 }
