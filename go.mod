@@ -14,7 +14,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/itchyny/gojq v0.12.6
 	github.com/jaypipes/envutil v1.0.0
-	github.com/micahhausler/aws-iam-policy v0.4.4
+	github.com/micahhausler/aws-iam-policy v0.4.5-0.20260511184658-411e29b8ffd2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/pflag v1.0.9
